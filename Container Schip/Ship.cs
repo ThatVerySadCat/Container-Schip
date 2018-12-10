@@ -31,13 +31,29 @@ namespace Container_Schip
         /// <param name="_height">The height of the ship, in containers.</param>
         /// <param name="_length">The length of the ship, in containers.</param>
         /// <param name="_width">The width of the ship, in containers.</param>
-        public Ship(int _height, int _length, int _width) { }
+        public Ship(int _height, int _length, int _width)
+        {
+            height = _height;
+            length = _length;
+            width = _width;
+            
+            for(int x = 0; x < width; x++)
+            {
+                for(int y = 0; y < length; y++)
+                {
+                    containerStacks.Add(new ContainerStack(height, x, y));
+                }
+            }
+        }
 
         /// <summary>
         /// Adds the given container to the most optimal container stack and returns true. Returns false if unable to place the container.
         /// </summary>
         /// <param name="container">The container to place.</param>
         /// <returns></returns>
-        public bool AddContainer(Container container) { throw new NotImplementedException(); }
+        public bool AddContainer(Container container)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

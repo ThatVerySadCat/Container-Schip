@@ -29,20 +29,32 @@ namespace Container_Schip
         /// 
         /// </summary>
         /// <param name="maxHeight">The maximum allowed height of the container stack, in containers.</param>
-        public ContainerStack(int maxHeight) { }
+        public ContainerStack(int _maxHeight, int _x, int _y)
+        {
+            maxHeight = _maxHeight;
+            x = _x;
+            y = _y;
+            containers = new List<Container>(maxHeight);
+        }
 
         /// <summary>
         /// Adds a container to the stack and returns true, if possible. Returns false otherwise.
         /// </summary>
         /// <param name="container">The container to place.</param>
         /// <returns></returns>
-        public bool AddContainer(Container container) { throw new NotImplementedException(); }
+        public bool AddContainer(Container container)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Returns true if the given container can be placed on the stack. Returns false otherwise.
         /// </summary>
         /// <param name="container">The container to check.</param>
         /// <returns></returns>
-        public bool CanContainerBePlaced(Container container) { throw new NotImplementedException(); }
+        public bool CanContainerBePlaced(Container container)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

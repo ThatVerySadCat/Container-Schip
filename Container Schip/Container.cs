@@ -30,6 +30,10 @@ namespace Container_Schip
         /// </summary>
         /// <param name="_type">The type of the container.</param>
         /// <param name="_weight">The weight of the container, in kg.</param>
-        public Container(ContainerType _type, int _weight) { }
+        public Container(ContainerType _type, int _weight)
+        {
+            Type = _type;
+            Weight = _weight;
+        }
     }
 }
