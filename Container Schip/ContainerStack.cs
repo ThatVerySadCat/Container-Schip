@@ -8,18 +8,21 @@ namespace Container_Schip
 {
     public class ContainerStack
     {
+        public int X
+        {
+            get;
+            private set;
+        }
+        public int Y
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// The maximum height of the stack, in containers.
         /// </summary>
         private int maxHeight;
-        /// <summary>
-        /// The X position of the stack on the ship, in containers.
-        /// </summary>
-        private int x;
-        /// <summary>
-        /// The Y position of the stack on the ship, in containers.
-        /// </summary>
-        private int y;
         /// <summary>
         /// A list containing the containers on the stack.
         /// </summary>
@@ -32,8 +35,8 @@ namespace Container_Schip
         public ContainerStack(int _maxHeight, int _x, int _y)
         {
             maxHeight = _maxHeight;
-            x = _x;
-            y = _y;
+            X = _x;
+            Y = _y;
             containers = new List<Container>(maxHeight);
         }
 
@@ -44,7 +47,13 @@ namespace Container_Schip
         /// <returns></returns>
         public bool AddContainer(Container container)
         {
-            throw new NotImplementedException();
+            if(containers.Count < maxHeight)
+            {
+                containers.Add(container);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -54,7 +63,14 @@ namespace Container_Schip
         /// <returns></returns>
         public bool CanContainerBePlaced(Container container)
         {
-            throw new NotImplementedException();
+            return (containers.Count < maxHeight && (containers.Count == 0 || (containers.Count > 0 && containers[containers.Count - 1].Type != ContainerType.Valuable)));
+        }
+
+        public int GetStackWeight()
+        {
+            int stackWeight = 0;
+            containers.ForEach(container => stackWeight += container.Weight);
+            return stackWeight;
         }
     }
 }

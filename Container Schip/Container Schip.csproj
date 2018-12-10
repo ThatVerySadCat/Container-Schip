@@ -46,6 +46,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WeightDirectionWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

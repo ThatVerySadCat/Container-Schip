@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Container Schip", "Container Schip\Container Schip.csproj", "{48A20A15-7F03-4ECF-93A3-F84F94981612}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{B72832BD-2063-4643-8A9F-AD8356856EEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{48A20A15-7F03-4ECF-93A3-F84F94981612}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48A20A15-7F03-4ECF-93A3-F84F94981612}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48A20A15-7F03-4ECF-93A3-F84F94981612}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B72832BD-2063-4643-8A9F-AD8356856EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B72832BD-2063-4643-8A9F-AD8356856EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B72832BD-2063-4643-8A9F-AD8356856EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B72832BD-2063-4643-8A9F-AD8356856EEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
