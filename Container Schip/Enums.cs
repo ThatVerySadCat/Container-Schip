@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Container_Schip
 {
-    public class Class1
+    public enum ContainerType
     {
+        Normal = 0,
+        Cooled = 1,
+        Valuable = 2
     }
 }
