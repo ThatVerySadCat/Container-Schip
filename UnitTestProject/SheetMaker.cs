@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using Excel = Microsoft.Office.Interop;
+using Excel = Microsoft.Office.Interop.Excel;
+
+using Container_Schip;
 
 namespace UnitTestProject
 {
     public class SheetMaker
-    {
-        public static void CreateExcelSheet()
+    {        /// <summary>
+
+        /// Generates an Excel sheet and displays it within Excel based on the given ship.
+        /// </summary>
+        /// <param name="ship">The ship on which to base the sheet.</param>
+        public static void ShipToExcelSheet(Ship ship)
         {
-            /*Excel.Application oXL;
+            Excel.Application oXL;
             Excel._Workbook oWB;
             Excel._Worksheet oSheet;
 
@@ -22,23 +29,23 @@ namespace UnitTestProject
             oWB = (Excel._Workbook)(oXL.Workbooks.Add(Missing.Value));
             oSheet = (Excel._Worksheet)oWB.ActiveSheet;
 
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < ship.Width; x++)
             {
                 oSheet.Cells[3, x + 4] = x.ToString();
             }
-            for (int y = 0; y < length; y++)
+            for (int y = 0; y < ship.Length; y++)
             {
                 oSheet.Cells[y + 4, 3] = y.ToString();
             }
 
-            int halfLength = length / 2;
-            int halfWidth = width / 2;
-            foreach (ContainerStack stack in containerStacks)
+            int halfLength = ship.Length / 2;
+            int halfWidth = ship.Width / 2;
+            foreach (ContainerStack stack in ship.iContainerStacks)
             {
-                oSheet.Cells[1, 2] = "Bottom: " + GetBottomSideWeight();
-                oSheet.Cells[2, 1] = "Left: " + GetLeftSideWeight();
-                oSheet.Cells[3, 2] = "Top: " + GetTopSideWeight();
-                oSheet.Cells[2, 3] = "Right: " + GetRightSideWeight();
+                oSheet.Cells[1, 2] = "Bottom: " + ship.GetBottomSideWeight();
+                oSheet.Cells[2, 1] = "Left: " + ship.GetLeftSideWeight();
+                oSheet.Cells[3, 2] = "Top: " + ship.GetTopSideWeight();
+                oSheet.Cells[2, 3] = "Right: " + ship.GetRightSideWeight();
 
                 string cellString = "";
                 foreach (Container container in stack.iContainers)
@@ -47,7 +54,7 @@ namespace UnitTestProject
                 }
 
                 oSheet.Cells[stack.Y + 4, stack.X + 4] = cellString;
-            }*/
+            }
         }
     }
 }

@@ -8,6 +8,9 @@ namespace Container_Schip
 {
     public class ContainerStack
     {
+        /// <summary>
+        /// Does the stack have at least one container?
+        /// </summary>
         public bool HasContainers
         {
             get
@@ -20,6 +23,9 @@ namespace Container_Schip
                 return false;
             }
         }
+        /// <summary>
+        /// Does the stack have a valuable container?
+        /// </summary>
         public bool HasValuableContainer
         {
             get
@@ -32,16 +38,25 @@ namespace Container_Schip
                 return false;
             }
         }
+        /// <summary>
+        /// The X position of the stack on the ship it belongs to, in containers.
+        /// </summary>
         public int X
         {
             get;
             private set;
         }
+        /// <summary>
+        /// The Y position of the stack on the ship it belongs to, in containers.
+        /// </summary>
         public int Y
         {
             get;
             private set;
         }
+        /// <summary>
+        /// A ReadOnly list which contains all of the containers found on the stack.
+        /// </summary>
         public IReadOnlyList<Container> iContainers
         {
             get
@@ -99,6 +114,10 @@ namespace Container_Schip
                 GetBottomContainerLoad() + container.Weight <= 120000);
         }
 
+        /// <summary>
+        /// Returns the combined weight of all the containers on the stack, in kg.
+        /// </summary>
+        /// <returns></returns>
         public int GetStackWeight()
         {
             int stackWeight = 0;
@@ -106,6 +125,10 @@ namespace Container_Schip
             return stackWeight;
         }
 
+        /// <summary>
+        /// Returns the amount of total weight on top of the bottom most container, in kg.
+        /// </summary>
+        /// <returns></returns>
         private int GetBottomContainerLoad()
         {
             if(containers.Count > 1)

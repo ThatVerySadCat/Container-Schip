@@ -10,6 +10,9 @@ namespace UnitTestProject
 {
     class ContainerGenerator
     {
+        /// <summary>
+        /// The random number generator used to generate random numbers.
+        /// </summary>
         private Random rng;
 
         public ContainerGenerator()
@@ -17,6 +20,10 @@ namespace UnitTestProject
             rng = new Random((int)DateTime.Now.Ticks);
         }
 
+        /// <summary>
+        /// Returns a container with a random Type and weight.
+        /// </summary>
+        /// <returns></returns>
         public Container GetRandomContainer()
         {
             ContainerType randomType = (ContainerType)rng.Next(0, 3);
@@ -25,6 +32,10 @@ namespace UnitTestProject
             return new Container(randomType, randomWeight);
         }
 
+        /// <summary>
+        /// Returns a cooled container with a random weight.
+        /// </summary>
+        /// <returns></returns>
         public Container GetRandomCooledContainer()
         {
             int randomWeight = rng.Next(4000, 30001);
@@ -32,6 +43,10 @@ namespace UnitTestProject
             return new Container(ContainerType.Cooled, randomWeight);
         }
 
+        /// <summary>
+        /// Returns a normal container with a random weight.
+        /// </summary>
+        /// <returns></returns>
         public Container GetRandomNormalContainer()
         {
             int randomWeight = rng.Next(4000, 30001);
@@ -39,6 +54,10 @@ namespace UnitTestProject
             return new Container(ContainerType.Normal, randomWeight);
         }
 
+        /// <summary>
+        /// Returns a valuable container with a random weight.
+        /// </summary>
+        /// <returns></returns>
         public Container GetRandomValuableContainer()
         {
             int randomWeight = rng.Next(4000, 30001);
@@ -46,6 +65,11 @@ namespace UnitTestProject
             return new Container(ContainerType.Valuable, randomWeight);
         }
 
+        /// <summary>
+        /// Returns a list of containers with random types and random weights.
+        /// </summary>
+        /// <param name="count">The amount of containers to generate.</param>
+        /// <returns></returns>
         public List<Container> GetRandomContainers(int count)
         {
             List<Container> returnList = new List<Container>(count);
@@ -57,6 +81,11 @@ namespace UnitTestProject
             return returnList;
         }
 
+        /// <summary>
+        /// Returns a list of cooled containers with random weights.
+        /// </summary>
+        /// <param name="count">The amount of cooled containers to generate.</param>
+        /// <returns></returns>
         public List<Container> GetRandomCooledContainers(int count)
         {
             List<Container> returnList = new List<Container>(count);
@@ -68,6 +97,11 @@ namespace UnitTestProject
             return returnList;
         }
 
+        /// <summary>
+        /// Returns a list of normal containers with random weights.
+        /// </summary>
+        /// <param name="count">The amount of normal containers to generate.</param>
+        /// <returns></returns>
         public List<Container> GetRandomNormalContainers(int count)
         {
             List<Container> returnList = new List<Container>(count);
@@ -79,6 +113,11 @@ namespace UnitTestProject
             return returnList;
         }
 
+        /// <summary>
+        /// Returns a list of valuable containers with random weights.
+        /// </summary>
+        /// <param name="count">The amount of normal containers to generate.</param>
+        /// <returns></returns>
         public List<Container> GetRandomValuableContainers(int count)
         {
             List<Container> returnList = new List<Container>(count);
