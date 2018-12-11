@@ -11,7 +11,7 @@ namespace UnitTestProject
     public class AlgorithmAssuranceTests
     {
         [TestMethod]
-        public void CanPlaceContainers()
+        public void CanPlaceContainersTest()
         {
             ContainerGenerator generator = new ContainerGenerator();
             Ship ship = new Ship(5, 10, 5, 12);
@@ -30,7 +30,7 @@ namespace UnitTestProject
         }
 
         [TestMethod]
-        public void EnsureNoValuableIsPlacedOnValuable()
+        public void EnsureNoValuableIsPlacedOnValuableTest()
         {
             ContainerGenerator generator = new ContainerGenerator();
             Ship ship = new Ship(5, 10, 5, 10);
