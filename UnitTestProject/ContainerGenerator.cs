@@ -39,6 +39,13 @@ namespace UnitTestProject
             return new Container(ContainerType.Normal, randomWeight);
         }
 
+        public Container GetRandomValuableContainer()
+        {
+            int randomWeight = rng.Next(4000, 30001);
+
+            return new Container(ContainerType.Valuable, randomWeight);
+        }
+
         public List<Container> GetRandomContainers(int count)
         {
             List<Container> returnList = new List<Container>(count);
@@ -67,6 +74,17 @@ namespace UnitTestProject
             for (int i = 0; i < count; i++)
             {
                 returnList.Add(GetRandomNormalContainer());
+            }
+
+            return returnList;
+        }
+
+        public List<Container> GetRandomValuableContainers(int count)
+        {
+            List<Container> returnList = new List<Container>(count);
+            for(int i = 0; i < count; i++)
+            {
+                returnList.Add(GetRandomValuableContainer());
             }
 
             return returnList;

@@ -8,6 +8,30 @@ namespace Container_Schip
 {
     public class ContainerStack
     {
+        public bool HasContainers
+        {
+            get
+            {
+                if (containers.Count > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+        public bool HasValuableContainer
+        {
+            get
+            {
+                if(containers.Count > 0 && containers[containers.Count - 1].Type == ContainerType.Valuable)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
         public int X
         {
             get;
@@ -17,6 +41,13 @@ namespace Container_Schip
         {
             get;
             private set;
+        }
+        public IReadOnlyList<Container> iContainers
+        {
+            get
+            {
+                return containers;
+            }
         }
 
         /// <summary>
@@ -63,7 +94,9 @@ namespace Container_Schip
         /// <returns></returns>
         public bool CanContainerBePlaced(Container container)
         {
-            return (containers.Count < maxHeight && (containers.Count == 0 || (containers.Count > 0 && containers[containers.Count - 1].Type != ContainerType.Valuable)));
+            return (containers.Count < maxHeight && 
+                (containers.Count == 0 || (containers.Count > 0 && containers[containers.Count - 1].Type != ContainerType.Valuable)) && 
+                GetBottomContainerLoad() + container.Weight <= 120000);
         }
 
         public int GetStackWeight()
@@ -71,6 +104,20 @@ namespace Container_Schip
             int stackWeight = 0;
             containers.ForEach(container => stackWeight += container.Weight);
             return stackWeight;
+        }
+
+        private int GetBottomContainerLoad()
+        {
+            if(containers.Count > 1)
+            {
+                int containerLoad = 0;
+                for(int i = 1; i < containers.Count; i++)
+                {
+                    containerLoad += containers[i].Weight;
+                }
+            }
+
+            return 0;
         }
     }
 }

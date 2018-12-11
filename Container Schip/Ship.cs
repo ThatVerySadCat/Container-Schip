@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Container_Schip
 {
@@ -24,6 +27,9 @@ namespace Container_Schip
         /// A list containg container stacks which hold the containers.
         /// </summary>
         private List<ContainerStack> containerStacks;
+        private List<Container> normalContainers = new List<Container>();
+        private List<Container> cooledContainers = new List<Container>();
+        private List<Container> valuableContainers = new List<Container>();
 
         /// <summary>
         /// 
@@ -52,32 +58,43 @@ namespace Container_Schip
         /// </summary>
         /// <param name="container">The container to place.</param>
         /// <returns></returns>
-        public bool AddContainer(Container container)
+        public void AddContainer(Container container)
         {
             if (container.Type == ContainerType.Cooled)
             {
-                AddCooledContainer(container);
+                cooledContainers.Add(container);
             }
             else if(container.Type == ContainerType.Normal)
             {
-                AddNormalContainer(container);
+                normalContainers.Add(container);
             }
-
-            return true;
+            else if(container.Type == ContainerType.Valuable)
+            {
+                valuableContainers.Add(container);
+            }
         }
 
-        private bool AddCooledContainer(Container container)
+        public void AddContainers(List<Container> containers)
         {
-            if(container.Type != ContainerType.Cooled)
+            foreach(Container container in containers)
+            {
+                AddContainer(container);
+            }
+        }
+
+        private bool PlaceCooledContainer(Container container)
+        {
+            if (container.Type != ContainerType.Cooled)
             {
                 return false;
             }
 
             List<WeightDirectionWrapper> optimalWrappers = GetOptimalDirections();
+
             int startPosX = 0;
             int startPosY = length - 1;
 
-            if(optimalWrappers[0].X < 0)
+            if (optimalWrappers[0].X < 0)
             {
                 startPosX = width / 2;
             }
@@ -87,38 +104,36 @@ namespace Container_Schip
             }
 
             int currentPosX = startPosX;
-            int currentPosY = startPosY;
-            
-            int horizontalDirectionIndex = 0;
+
+            int directionWrapperIndex = 0;
             do
             {
-                ContainerStack chosenContainerStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY);
-                if (!chosenContainerStack.CanContainerBePlaced(container))
+                ContainerStack selectedStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == startPosY);
+                if (!selectedStack.CanContainerBePlaced(container))
                 {
-                    if ((optimalWrappers[horizontalDirectionIndex].X > 0 && currentPosX >= width - 1) || (optimalWrappers[horizontalDirectionIndex].X < 0 && currentPosX <= 0))
+                    if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
                     {
-                        horizontalDirectionIndex += 1;
                         currentPosX = startPosX;
 
-                        if (horizontalDirectionIndex > optimalWrappers.Count)
+                        directionWrapperIndex += 1;
+                        if(directionWrapperIndex >= optimalWrappers.Count)
                         {
                             return false;
                         }
                     }
-
-                    currentPosX += optimalWrappers[horizontalDirectionIndex].X;
+                    else
+                    {
+                        currentPosX += optimalWrappers[directionWrapperIndex].X;
+                    }
                 }
                 else
                 {
-                    chosenContainerStack.AddContainer(container);
-                    break;
+                    return selectedStack.AddContainer(container);
                 }
-            } while (horizontalDirectionIndex < optimalWrappers.Count);
-
-            return true;
+            } while (true);
         }
 
-        private bool AddNormalContainer(Container container)
+        private bool PlaceNormalContainer(Container container)
         {
             if (container.Type != ContainerType.Normal)
             {
@@ -141,11 +156,11 @@ namespace Container_Schip
 
             if (optimalWrappers[0].Y < 0)
             {
-                startPosY = width / 2;
+                startPosY = length / 2;
             }
             else
             {
-                startPosY = width / 2 + 1;
+                startPosY = length / 2 + 1;
             }
 
             int currentPosX = startPosX;
@@ -159,7 +174,7 @@ namespace Container_Schip
                 {
                     if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
                     {
-                        if ((optimalWrappers[directionWrapperIndex].Y > 0 && currentPosY >= height - 1) || (optimalWrappers[directionWrapperIndex].Y < 0 && currentPosY <= 0))
+                        if ((optimalWrappers[directionWrapperIndex].Y > 0 && currentPosY >= length - 1) || (optimalWrappers[directionWrapperIndex].Y < 0 && currentPosY <= 0))
                         {
                             currentPosX = startPosX;
                             currentPosY = startPosY;
@@ -187,10 +202,150 @@ namespace Container_Schip
                 }
                 else
                 {
-                    selectedStack.AddContainer(container);
-                    return true;
+                    return selectedStack.AddContainer(container);
                 }
             } while (true);
+        }
+
+        private bool PlaceValuableContainer(Container container)
+        {
+            if (container.Type != ContainerType.Valuable)
+            {
+                return false;
+            }
+
+            List<WeightDirectionWrapper> optimalWrappers = GetOptimalDirections();
+
+            int top = GetTopSideWeight();
+            int bottom = GetBottomSideWeight();
+            int left = GetLeftSideWeight();
+            int right = GetRightSideWeight();
+
+            int startPosX = 0;
+            int startPosY = 0;
+
+            if (optimalWrappers[0].X < 0)
+            {
+                startPosX = width / 2;
+            }
+            else
+            {
+                startPosX = width / 2 + 1;
+            }
+
+            if (optimalWrappers[0].Y < 0)
+            {
+                startPosY = length / 2;
+            }
+            else
+            {
+                startPosY = length / 2 + 1;
+            }
+
+            int currentPosX = startPosX;
+            int currentPosY = startPosY;
+
+            int directionWrapperIndex = 0;
+            do
+            {
+                ContainerStack selectedStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY);
+                bool containerCanBePlaced = selectedStack.CanContainerBePlaced(container);
+
+                bool frontOrBackFree = false;
+                bool valuableContainerFrontOrBack = false;
+                if (currentPosY + 1 <= length - 1)
+                {
+                    ContainerStack frontStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY + 1);
+                    if(!frontStack.HasContainers)
+                    {
+                        frontOrBackFree = true;
+                    }
+                    if(frontStack.HasValuableContainer)
+                    {
+                        valuableContainerFrontOrBack = true;
+                    }
+                }
+                if (!frontOrBackFree && currentPosY - 1 >= 0)
+                {
+                    ContainerStack backStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY - 1);
+                    if(!backStack.HasContainers)
+                    {
+                        frontOrBackFree = true;
+                    }
+                    
+                    if(backStack.HasValuableContainer)
+                    {
+                        valuableContainerFrontOrBack = true;
+                    }
+                }
+
+                if(containerCanBePlaced && frontOrBackFree && !valuableContainerFrontOrBack)
+                {
+                    return selectedStack.AddContainer(container);
+                }
+                else
+                {
+                    if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
+                    {
+                        if ((optimalWrappers[directionWrapperIndex].Y > 0 && currentPosY >= length - 1) || (optimalWrappers[directionWrapperIndex].Y < 0 && currentPosY <= 0))
+                        {
+                            currentPosX = startPosX;
+                            currentPosY = startPosY;
+
+                            directionWrapperIndex += 1;
+                            if (directionWrapperIndex >= optimalWrappers.Count)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                currentPosY += optimalWrappers[directionWrapperIndex].Y;
+                            }
+                        }
+                        else
+                        {
+                            currentPosX = startPosX;
+                            currentPosY += optimalWrappers[directionWrapperIndex].Y;
+                        }
+                    }
+                    else
+                    {
+                        currentPosX += optimalWrappers[directionWrapperIndex].X;
+                    }
+                }
+            } while (true);
+        }
+
+        public bool PlaceContainers()
+        {
+            cooledContainers = cooledContainers.OrderByDescending(container => container.Weight).ToList();
+            foreach(Container container in cooledContainers)
+            {
+                if(!PlaceCooledContainer(container))
+                {
+                    return false;
+                }
+            }
+
+            normalContainers = normalContainers.OrderByDescending(container => container.Weight).ToList();
+            foreach (Container container in normalContainers)
+            {
+                if(!PlaceNormalContainer(container))
+                {
+                    return false;
+                }
+            }
+
+            valuableContainers.OrderByDescending(container => container.Weight);
+            foreach(Container container in valuableContainers)
+            {
+                if(!PlaceValuableContainer(container))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private List<WeightDirectionWrapper> GetOptimalDirections()
