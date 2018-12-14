@@ -113,8 +113,10 @@ namespace UnitTestProject
         {
             ContainerGenerator generator = new ContainerGenerator();
 
-            Ship ship = new Ship(5, 19, 11);
+            Ship ship = new Ship(5, 19, 5, 11);
             ship.AddContainers(generator.GetRandomNormalContainers(50));
+            ship.AddContainers(generator.GetRandomCooledContainers(25));
+            ship.AddContainers(generator.GetRandomValuableContainers(15));
 
             ship.PlaceContainers();
             SheetMaker.ShipToExcelSheet(ship);
