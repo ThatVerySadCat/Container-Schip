@@ -108,7 +108,7 @@ namespace UnitTestProject
             Assert.AreEqual(false, actual);
         }
 
-        /*[TestMethod]
+        //[TestMethod]
         public void CheatySheetyPleaseIgnore()
         {
             ContainerGenerator generator = new ContainerGenerator();
@@ -120,6 +120,6 @@ namespace UnitTestProject
 
             ship.PlaceContainers();
             SheetMaker.ShipToExcelSheet(ship);
-        }*/
+        }
     }
 }

@@ -127,14 +127,14 @@ namespace Container_Schip
 
             positiveStartX = Width / 2;
             negativeStartX = Width / 2;
-            if (IsEven(Width))
+            if (Width % 2 == 0)
             {
                 negativeStartX -= 1;
             }
 
             positiveStartY = Length / 2;
             negativeStartY = Length / 2;
-            if(IsEven(Length))
+            if(Length % 2 == 0)
             {
                 negativeStartY -= 1;
             }
@@ -288,16 +288,6 @@ namespace Container_Schip
         }
 
         /// <summary>
-        /// Is the given value even?
-        /// </summary>
-        /// <param name="value">The value to check.</param>
-        /// <returns></returns>
-        private bool IsEven(int value)
-        {
-            return (value % 2 == 0);
-        }
-
-        /// <summary>
         /// Places the given container, which must be cooled, in an appropriate container stack and returns true. Returns false if the container couldn't be placed.
         /// </summary>
         /// <param name="container">The container to place.</param>
@@ -311,17 +301,8 @@ namespace Container_Schip
 
             List<WeightDirectionWrapper> optimalWrappers = GetOptimalDirections();
 
-            int startPosX = 0;
+            int startPosX = GetContainerPlacementStartingPosX(optimalWrappers[0]);
             int startPosY = Length - 1;
-
-            if (optimalWrappers[0].X < 0)
-            {
-                startPosX = halfWidth;
-            }
-            else
-            {
-                startPosX = halfWidth + 1;
-            }
 
             int currentPosX = startPosX;
 
@@ -329,26 +310,16 @@ namespace Container_Schip
             do
             {
                 ContainerStack selectedStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == startPosY);
-                if (!selectedStack.CanContainerBePlaced(container))
+                if (selectedStack.CanContainerBePlaced(container))
                 {
-                    if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= Width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
-                    {
-                        currentPosX = startPosX;
-
-                        directionWrapperIndex += 1;
-                        if(directionWrapperIndex >= optimalWrappers.Count)
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        currentPosX += optimalWrappers[directionWrapperIndex].X;
-                    }
+                    return selectedStack.AddContainer(container);
                 }
                 else
                 {
-                    return selectedStack.AddContainer(container);
+                    if(!MoveGivenPosition(ref currentPosX, ref directionWrapperIndex, optimalWrappers, startPosX))
+                    {
+                        return false;
+                    }
                 }
             } while (true);
         }
@@ -367,27 +338,9 @@ namespace Container_Schip
 
             List<WeightDirectionWrapper> optimalWrappers = GetOptimalDirections();
 
-            int startPosX = 0;
-            int startPosY = 0;
-
-            if (optimalWrappers[0].X < 0)
-            {
-                startPosX = halfWidth;
-            }
-            else
-            {
-                startPosX = halfWidth + 1;
-            }
-
-            if (optimalWrappers[0].Y < 0)
-            {
-                startPosY = halfLength;
-            }
-            else
-            {
-                startPosY = halfLength + 1;
-            }
-
+            int startPosX = GetContainerPlacementStartingPosX(optimalWrappers[0]);
+            int startPosY = GetNormalContainerPlacementStartingPosY(optimalWrappers[0]);
+            
             int currentPosX = startPosX;
             int currentPosY = startPosY;
 
@@ -395,39 +348,16 @@ namespace Container_Schip
             do
             {
                 ContainerStack selectedStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY);
-                if (!selectedStack.CanContainerBePlaced(container))
+                if (selectedStack.CanContainerBePlaced(container))
                 {
-                    if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= Width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
-                    {
-                        if ((optimalWrappers[directionWrapperIndex].Y > 0 && currentPosY >= Length - 1) || (optimalWrappers[directionWrapperIndex].Y < 0 && currentPosY <= 0))
-                        {
-                            currentPosX = startPosX;
-                            currentPosY = startPosY;
-
-                            directionWrapperIndex += 1;
-                            if(directionWrapperIndex >= optimalWrappers.Count)
-                            {
-                                return false;
-                            }
-                            else
-                            {
-                                currentPosY += optimalWrappers[directionWrapperIndex].Y;
-                            }
-                        }
-                        else
-                        {
-                            currentPosX = startPosX;
-                            currentPosY += optimalWrappers[directionWrapperIndex].Y;
-                        }
-                    }
-                    else
-                    {
-                        currentPosX += optimalWrappers[directionWrapperIndex].X;
-                    }
+                    return selectedStack.AddContainer(container);
                 }
                 else
                 {
-                    return selectedStack.AddContainer(container);
+                    if (!MoveGivenPosition(ref currentPosX, ref currentPosY, ref directionWrapperIndex, optimalWrappers, startPosX, startPosY))
+                    {
+                        return false;
+                    }
                 }
             } while (true);
         }
@@ -446,31 +376,8 @@ namespace Container_Schip
 
             List<WeightDirectionWrapper> optimalWrappers = GetOptimalDirections();
 
-            int top = GetTopSideWeight();
-            int bottom = GetBottomSideWeight();
-            int left = GetLeftSideWeight();
-            int right = GetRightSideWeight();
-
-            int startPosX = 0;
-            int startPosY = 0;
-
-            if (optimalWrappers[0].X < 0)
-            {
-                startPosX = halfWidth;
-            }
-            else
-            {
-                startPosX = halfWidth + 1;
-            }
-
-            if (optimalWrappers[0].Y < 0)
-            {
-                startPosY = halfLength / 2;
-            }
-            else
-            {
-                startPosY = halfLength / 2 + 1;
-            }
+            int startPosX = GetContainerPlacementStartingPosX(optimalWrappers[0]);
+            int startPosY = GetValuableContainerPlacementStartingPosY(optimalWrappers[0]);
 
             int currentPosX = startPosX;
             int currentPosY = startPosY;
@@ -480,70 +387,193 @@ namespace Container_Schip
             {
                 ContainerStack selectedStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY);
                 bool containerCanBePlaced = selectedStack.CanContainerBePlaced(container);
+                bool mayContainerBePlaced = MayValuableContainerBePlaced(currentPosX, currentPosY);
 
-                bool frontOrBackFree = false;
-                bool valuableContainerFrontOrBack = false;
-                if (currentPosY + 1 <= Length - 1)
-                {
-                    ContainerStack frontStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY + 1);
-                    if(!frontStack.HasContainers)
-                    {
-                        frontOrBackFree = true;
-                    }
-                    if(frontStack.HasValuableContainer)
-                    {
-                        valuableContainerFrontOrBack = true;
-                    }
-                }
-                if (!frontOrBackFree && currentPosY - 1 >= 0)
-                {
-                    ContainerStack backStack = containerStacks.Find(stack => stack.X == currentPosX && stack.Y == currentPosY - 1);
-                    if(!backStack.HasContainers)
-                    {
-                        frontOrBackFree = true;
-                    }
-                    
-                    if(backStack.HasValuableContainer)
-                    {
-                        valuableContainerFrontOrBack = true;
-                    }
-                }
-
-                if(containerCanBePlaced && frontOrBackFree && !valuableContainerFrontOrBack)
+                if(containerCanBePlaced && mayContainerBePlaced)
                 {
                     return selectedStack.AddContainer(container);
                 }
                 else
                 {
-                    if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= Width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
+                    if(!MoveGivenPosition(ref currentPosX, ref currentPosY, ref directionWrapperIndex, optimalWrappers, startPosX, startPosY))
                     {
-                        if ((optimalWrappers[directionWrapperIndex].Y > 0 && currentPosY >= Length - 1) || (optimalWrappers[directionWrapperIndex].Y < 0 && currentPosY <= 0))
-                        {
-                            currentPosX = startPosX;
-                            currentPosY = startPosY;
-
-                            directionWrapperIndex += 1;
-                            if (directionWrapperIndex >= optimalWrappers.Count)
-                            {
-                                return false;
-                            }
-                            else
-                            {
-                                currentPosY += optimalWrappers[directionWrapperIndex].Y;
-                            }
-                        }
-                        else
-                        {
-                            currentPosX = startPosX;
-                            currentPosY += optimalWrappers[directionWrapperIndex].Y;
-                        }
-                    }
-                    else
-                    {
-                        currentPosX += optimalWrappers[directionWrapperIndex].X;
+                        return false;
                     }
                 }
             } while (true);
+        }
+
+        /// <summary>
+        /// Can a valuable container be placed on the stack at the given checkPosX and checkPosY positions?
+        /// </summary>
+        /// <param name="checkPosX">The X position of the stack to check, in Containers.</param>
+        /// <param name="checkPosY">The Y position of the stack to check, in Containers.</param>
+        /// <returns></returns>
+        private bool MayValuableContainerBePlaced(int checkPosX, int checkPosY)
+        {
+            bool frontOrBackFree = false;
+            bool valuableContainerFrontOrBack = false;
+
+            if (checkPosY + 1 <= Length - 1)
+            {
+                ContainerStack frontStack = containerStacks.Find(stack => stack.X == checkPosX && stack.Y == checkPosY + 1);
+                if (!frontStack.HasContainers)
+                {
+                    frontOrBackFree = true;
+                }
+                if (frontStack.HasValuableContainer)
+                {
+                    valuableContainerFrontOrBack = true;
+                }
+            }
+            if (!frontOrBackFree && checkPosY - 1 >= 0)
+            {
+                ContainerStack backStack = containerStacks.Find(stack => stack.X == checkPosX && stack.Y == checkPosY - 1);
+                if (!backStack.HasContainers)
+                {
+                    frontOrBackFree = true;
+                }
+
+                if (backStack.HasValuableContainer)
+                {
+                    valuableContainerFrontOrBack = true;
+                }
+            }
+
+            return frontOrBackFree && !valuableContainerFrontOrBack;
+        }
+
+        /// <summary>
+        /// Moves the given currentPosX in the correct manner and returns true. Returns false if the currentPosX could not be moved further.
+        /// </summary>
+        /// <param name="currentPosX">The X position to update, in Containers</param>
+        /// <param name="directionWrapperIndex">The index to use with the optimalWrappers parameter.</param>
+        /// <param name="optimalWrappers">The optimal wrappers.</param>
+        /// <param name="startPosX">The X position to reset to upon reaching the edge, in Containers.</param>
+        /// <returns></returns>
+        private bool MoveGivenPosition(ref int currentPosX, ref int directionWrapperIndex, List<WeightDirectionWrapper> optimalWrappers, int startPosX)
+        {
+            if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= Width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
+            {
+                currentPosX = startPosX;
+
+                directionWrapperIndex += 1;
+                if (directionWrapperIndex >= optimalWrappers.Count)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                currentPosX += optimalWrappers[directionWrapperIndex].X;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// Moves the given currentPosX and currentPosY in the correct manner and returns true. Returns false if the currentPosX and currentPosY could not be moved further.
+        /// </summary>
+        /// <param name="currentPosX">The X position to update, in Containers.</param>
+        /// <param name="currentPosY">The Y position to update, in Containers.</param>
+        /// <param name="directionWrapperIndex">The index to use with the optimalWrappers parameter.</param>
+        /// <param name="optimalWrappers">The optimal wrappers.</param>
+        /// <param name="startPosX">The X position to reset to upon reaching the edge, in Containers.</param>
+        /// <param name="startPosY">The Y position to reset to upon reaching the edge, in Containers.</param>
+        /// <returns></returns>
+        private bool MoveGivenPosition(ref int currentPosX, ref int currentPosY, ref int directionWrapperIndex, List<WeightDirectionWrapper> optimalWrappers, int startPosX, int startPosY)
+        {
+            if ((optimalWrappers[directionWrapperIndex].X > 0 && currentPosX >= Width - 1) || (optimalWrappers[directionWrapperIndex].X < 0 && currentPosX <= 0))
+            {
+                if ((optimalWrappers[directionWrapperIndex].Y > 0 && currentPosY >= Length - 1) || (optimalWrappers[directionWrapperIndex].Y < 0 && currentPosY <= 0))
+                {
+                    currentPosX = startPosX;
+                    currentPosY = startPosY;
+
+                    directionWrapperIndex += 1;
+                    if (directionWrapperIndex >= optimalWrappers.Count)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        currentPosY += optimalWrappers[directionWrapperIndex].Y;
+                    }
+                }
+                else
+                {
+                    currentPosX = startPosX;
+                    currentPosY += optimalWrappers[directionWrapperIndex].Y;
+                }
+            }
+            else
+            {
+                currentPosX += optimalWrappers[directionWrapperIndex].X;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns the correct starting X position for a container based on the given mostOptimalWrapper parameter.
+        /// </summary>
+        /// <param name="mostOptimalWrapper">The most optimal wrapper.</param>
+        /// <returns></returns>
+        private int GetContainerPlacementStartingPosX(WeightDirectionWrapper mostOptimalWrapper)
+        {
+            int startPosX = 0;
+
+            if (mostOptimalWrapper.X < 0)
+            {
+                startPosX = halfWidth;
+            }
+            else
+            {
+                startPosX = halfWidth + 1;
+            }
+
+            return startPosX;
+        }
+
+        /// <summary>
+        /// Returns the correct starting Y position for a normal container based on the given mostOptimalWrapper parameter.
+        /// </summary>
+        /// <param name="mostOptimalWrapper">The most optimal wrapper.</param>
+        /// <returns></returns>
+        private int GetNormalContainerPlacementStartingPosY(WeightDirectionWrapper mostOptimalWrapper)
+        {
+            int startPosY = 0;
+
+            if (mostOptimalWrapper.Y < 0)
+            {
+                startPosY = halfLength;
+            }
+            else
+            {
+                startPosY = halfLength + 1;
+            }
+
+            return startPosY;
+        }
+
+        /// <summary>
+        /// Returns the correct starting Y position for a valuable container based on the given mostOptimalWrapper parameter.
+        /// </summary>
+        /// <param name="mostOptimalWrapper"></param>
+        /// <returns></returns>
+        private int GetValuableContainerPlacementStartingPosY(WeightDirectionWrapper mostOptimalWrapper)
+        {
+            int startPosY = 0;
+
+            if (mostOptimalWrapper.Y < 0)
+            {
+                startPosY = halfLength / 2;
+            }
+            else
+            {
+                startPosY = halfLength / 2 + 1;
+            }
+
+            return startPosY;
         }
 
         /// <summary>
